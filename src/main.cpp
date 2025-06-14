@@ -47,6 +47,16 @@ public:
 		grid.draw(glm::ortho(-0.5f * fw, 0.5f * fw, -0.5f * fh, 0.5f * fh));
 
 		ImGui::ShowDemoWindow();
+		ImGui::Begin("control panel");
+
+		ImGui::DragFloat("translation x", &grid.origin.x, 1.f);
+		ImGui::DragFloat("translation y", &grid.origin.y, 1.f);
+
+		ImGui::InputFloat("scale x", &grid.scale.x, 0.5f, 1.f);
+		ImGui::InputFloat("scale y", &grid.scale.y, 0.5f, 1.f);
+
+		ImGui::End();
+
 	}
 };
 
