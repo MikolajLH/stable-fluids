@@ -12,6 +12,11 @@ public:
 private:
 	size_t N;
 	std::vector<float>data;
+	
+	std::vector<float>vx;
+	std::vector<float>vy;
+
+	std::vector<float>densities;
 
 	void diffuse();
 	void advect();
