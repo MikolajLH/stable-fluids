@@ -31,6 +31,18 @@ public:
 
 
 		wnd::clear_screen(0.5f, 0.3f, 0.6f);
+
+		for (size_t r = 0; r < grid.rows; ++r)
+			for (size_t c = 0; c < grid.cols; ++c) {
+				const float rf = static_cast<float>((rand() % 256)) / 255.f;
+				const float gf = static_cast<float>((rand() % 256)) / 255.f;
+				const float bf = static_cast<float>((rand() % 256)) / 255.f;
+
+				grid.change_color(r, c, glm::vec3(rf, gf, bf));
+			}
+
+		grid.update_colors();
+				
 		
 		grid.draw(glm::ortho(-0.5f * fw, 0.5f * fw, -0.5f * fh, 0.5f * fh));
 
