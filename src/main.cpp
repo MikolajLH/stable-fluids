@@ -34,7 +34,6 @@ public:
 
 		grid.update_colors();
 
-		ImGui::ShowDemoWindow();
 	}
 
 	void update(float dt) override {
@@ -47,6 +46,7 @@ public:
 		
 		grid.draw(glm::ortho(-0.5f * fw, 0.5f * fw, -0.5f * fh, 0.5f * fh));
 
+		ImGui::ShowDemoWindow();
 	}
 };
 
