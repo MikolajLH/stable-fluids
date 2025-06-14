@@ -33,6 +33,8 @@ public:
 			}
 
 		grid.update_colors();
+
+		ImGui::ShowDemoWindow();
 	}
 
 	void update(float dt) override {
