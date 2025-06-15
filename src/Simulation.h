@@ -3,20 +3,26 @@
 
 class Simulation {
 public:
-	Simulation(size_t N): N{N}, data(N, 0.f) {}
+	Simulation(size_t N);
 
 	void update(float dt);
 
 	void add_source();
 
-private:
-	size_t N;
-	std::vector<float>data;
-	
-	std::vector<float>vx;
-	std::vector<float>vy;
+	float* vx();
+	float* vy();
+	float* densities();
 
-	std::vector<float>densities;
+	size_t N;
+
+	std::vector<float>vx_1;
+	std::vector<float>vx_2;
+
+	std::vector<float>vy_1;
+	std::vector<float>vx_2;
+
+	std::vector<float>densities_1;
+	std::vector<float>densities_2;
 
 	void diffuse();
 	void advect();
