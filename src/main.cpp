@@ -45,8 +45,8 @@ public:
 		const auto fw = this->get_width();
 		const auto fh = this->get_height();
 
-		static float visc = 0.0f;
-		static float diff = 0.0f;
+		static float visc = 0.01f;
+		static float diff = 0.01f;
 
 		sim.vel_step(sim.N, sim.vx, sim.vy, sim.vx_prev, sim.vy_prev, visc, dt);
 		sim.dens_step(sim.N, sim.dens, sim.dens_prev, sim.vx, sim.vy, diff, dt);
