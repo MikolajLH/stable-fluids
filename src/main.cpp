@@ -74,8 +74,22 @@ public:
 		ImGui::DragFloat("translation x", &grid.origin.x, 1.f);
 		ImGui::DragFloat("translation y", &grid.origin.y, 1.f);
 
+
 		ImGui::InputFloat("scale x", &grid.scale.x, 0.5f, 1.f);
 		ImGui::InputFloat("scale y", &grid.scale.y, 0.5f, 1.f);
+
+
+
+		static int i0 = 0;
+		static int j0 = 0;
+		static float dens = 0.f;
+		ImGui::InputInt("row", &i0);
+		ImGui::InputInt("col", &j0);
+		ImGui::InputFloat("dens", &dens);
+
+		if (i0 > 0 and i0 < sim.N and j0 > 0 and j0 < sim.N) {
+			sim.dens_prev[sim.IX(j0, i0)] = dens;
+		}
 
 		ImGui::End();
 
