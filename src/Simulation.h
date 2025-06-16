@@ -5,12 +5,11 @@ class Simulation {
 public:
 	Simulation(size_t N);
 
-	void update(float dt);
-
 	size_t IX(size_t i, size_t j);
 	void SWAP(float* x0, float* x);
 
 	size_t N;
+	size_t size;
 
 	std::vector<float>d_vx;
 	std::vector<float>d_vx_prev;

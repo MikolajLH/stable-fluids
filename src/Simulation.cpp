@@ -2,7 +2,8 @@
 
 
 Simulation::Simulation(size_t N) :
-	N{ N }, d_vx(N, 0.f), d_vx_prev(N, 0.f), d_vy(N, 0.f), d_vy_prev(N, 0.f), d_dens(N, 0.f), d_dens_prev(N, 0.f),
+	N{ N }, size{ (N + 2) * (N + 2)},
+	d_vx(size, 0.f), d_vx_prev(size, 0.f), d_vy(size, 0.f), d_vy_prev(size, 0.f), d_dens(size, 0.f), d_dens_prev(size, 0.f),
 	vx{ nullptr }, vx_prev{ nullptr }, vy{ nullptr }, vy_prev{ nullptr }, dens{ nullptr }, dens_prev{ nullptr } {
 
 	vx = d_vx.data();
@@ -53,14 +54,14 @@ void Simulation::advect(size_t N, int b, float* d, float* d0, float* u, float* v
 			float x = i - dt0 * u[IX(i, j)];
 			float y = j - dt0 * v[IX(i, j)];
 
-			if (x < 0.5) x = 0.5;
-			if (x > N + 0.5) x = (float)N + 0.5;
+			if (x < 0.5f) x = 0.5f;
+			if (x > (float)N + 0.5f) x = (float)N + 0.5f;
 
 			size_t i0 = (size_t)x;
 			size_t i1 = i0 + 1;
 
-			if (y < 0.5) y = 0.5;
-			if (y > N + 0.5) y = (float)N + 0.5;
+			if (y < 0.5f) y = 0.5f;
+			if (y > (float)N + 0.5f) y = (float)N + 0.5f;
 			size_t j0 = (size_t)y;
 			size_t j1 = j0 + 1;
 
@@ -69,7 +70,7 @@ void Simulation::advect(size_t N, int b, float* d, float* d0, float* u, float* v
 			float t1 = y - j0;
 			float t0 = 1 - t1;
 
-			d[IX(i, j)] = s0 * (t0 * d0[IX(i0, j0)] + t1 * d 0[IX(i0, j1)]) + s1 * (t0 * d0[IX(i1, j0)] + t1 * d0[IX(i1, j1)]);
+			d[IX(i, j)] = s0 * (t0 * d0[IX(i0, j0)] + t1 * d0[IX(i0, j1)]) + s1 * (t0 * d0[IX(i1, j0)] + t1 * d0[IX(i1, j1)]);
 		}
 	}
 
@@ -77,12 +78,12 @@ void Simulation::advect(size_t N, int b, float* d, float* d0, float* u, float* v
 }
 
 void Simulation::project(size_t N, float* u, float* v, float* p, float* div) {
-	const float h = 1.0 / ((float)N);
+	const float h = 1.0f / ((float)N);
 	for (size_t i = 1; i <= N; i++) {
 		for (size_t j = 1; j <= N; j++) {
-			div[IX(i, j)] = -0.5 * h * (u[IX(i + 1, j)] - u[IX(i - 1, j)] +
+			div[IX(i, j)] = -0.5f * h * (u[IX(i + 1, j)] - u[IX(i - 1, j)] +
 				v[IX(i, j + 1)] - v[IX(i, j - 1)]);
-			p[IX(i, j)] = 0;
+			p[IX(i, j)] = 0.f;
 		}
 	}
 
@@ -100,8 +101,8 @@ void Simulation::project(size_t N, float* u, float* v, float* p, float* div) {
 
 	for (size_t i = 1; i <= N; i++) {
 		for (size_t j = 1; j <= N; j++) {
-			u[IX(i, j)] -= 0.5 * (p[IX(i + 1, j)] - p[IX(i - 1, j)]) / h;
-			v[IX(i, j)] -= 0.5 * (p[IX(i, j + 1)] - p[IX(i, j - 1)]) / h;
+			u[IX(i, j)] -= 0.5f * (p[IX(i + 1, j)] - p[IX(i - 1, j)]) / h;
+			v[IX(i, j)] -= 0.5f * (p[IX(i, j + 1)] - p[IX(i, j - 1)]) / h;
 		}
 	}
 
@@ -117,10 +118,10 @@ void Simulation::set_bnd(size_t N, int b, float* x) {
 		x[IX(i, N + 1)] = b == 2 ? -x[IX(i, N)] : x[IX(i, N)];
 	}
 
-	x[IX(0, 0)] = 0.5 * (x[IX(1, 0)] + x[IX(0, 1)]);
-	x[IX(0, N + 1)] = 0.5 * (x[IX(1, N + 1)] + x[IX(0, N)]);
-	x[IX(N + 1, 0)] = 0.5 * (x[IX(N, 0)] + x[IX(N + 1, 1)]);
-	x[IX(N + 1, N + 1)] = 0.5 * (x[IX(N, N + 1)] + x[IX(N + 1, N)]);
+	x[IX(0, 0)] = 0.5f * (x[IX(1, 0)] + x[IX(0, 1)]);
+	x[IX(0, N + 1)] = 0.5f * (x[IX(1, N + 1)] + x[IX(0, N)]);
+	x[IX(N + 1, 0)] = 0.5f * (x[IX(N, 0)] + x[IX(N + 1, 1)]);
+	x[IX(N + 1, N + 1)] = 0.5f * (x[IX(N, N + 1)] + x[IX(N + 1, N)]);
 }
 
 void Simulation::vel_step(size_t N, float* u, float* v, float* u0, float* v0, float visc, float dt) {
