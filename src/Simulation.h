@@ -7,27 +7,32 @@ public:
 
 	void update(float dt);
 
-	void add_source();
-
-	float* vx();
-	float* vy();
-	float* densities();
-
 	size_t N;
 
-	std::vector<float>vx_1;
-	std::vector<float>vx_2;
+	std::vector<float>d_vx;
+	std::vector<float>d_vx_prev;
 
-	std::vector<float>vy_1;
-	std::vector<float>vx_2;
+	std::vector<float>d_vy;
+	std::vector<float>d_vy_prev;
 
-	std::vector<float>densities_1;
-	std::vector<float>densities_2;
+	std::vector<float>d_dens;
+	std::vector<float>d_dens_prev;
 
-	void diffuse();
-	void advect();
-	void project();
-	void set_bnd();
-	void vel_step();
-	void den_step();
+	float* vx;
+	float* vx_prev;
+
+	float* vy;
+	float* vy_prev;
+
+	float* dens;
+	float* dens_prev;
+
+	void add_source(size_t N, float* x, float* s, float dt);
+
+	void diffuse(size_t N, int b, float* x, float* x0, float diff, float dt);
+	void advect(size_t N, int b, float* d, float* d0, float* u, float* v, float dt);
+	void project(size_t N, float* u, float* v, float* p, float* div);
+	void set_bnd(size_t N, int b, float* x);
+	void vel_step(size_t N, float* u, float* v, float* u0, float* v0, float visc, float dt);
+	void dens_step(size_t N, float* x, float* x0, float* u, float* v, float diff, float dt);
 };
