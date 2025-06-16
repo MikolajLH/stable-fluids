@@ -8,6 +8,7 @@ public:
 	void update(float dt);
 
 	size_t IX(size_t i, size_t j);
+	void SWAP(float* x0, float* x);
 
 	size_t N;
 
