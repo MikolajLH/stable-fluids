@@ -28,7 +28,6 @@ public:
 	float* dens_prev;
 
 	void add_source(size_t N, float* x, float* s, float dt);
-
 	void diffuse(size_t N, int b, float* x, float* x0, float diff, float dt);
 	void advect(size_t N, int b, float* d, float* d0, float* u, float* v, float dt);
 	void project(size_t N, float* u, float* v, float* p, float* div);
