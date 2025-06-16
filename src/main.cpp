@@ -78,6 +78,8 @@ public:
 		ImGui::InputFloat("scale x", &grid.scale.x, 0.5f, 1.f);
 		ImGui::InputFloat("scale y", &grid.scale.y, 0.5f, 1.f);
 
+		ImGui::InputFloat("visc", &visc, 0.5f, 1.f);
+
 
 
 		static int i0 = 0;
