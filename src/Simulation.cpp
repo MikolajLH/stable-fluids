@@ -26,11 +26,12 @@
 #include <algorithm>
 #include <math.h>
 
+
+
 #define SWAP(value0,value) {float *tmp=value0;value0=value;value=tmp;}
 
 StableSolver::StableSolver()
-{
-}
+{}
 
 StableSolver::~StableSolver()
 {
