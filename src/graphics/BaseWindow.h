@@ -32,11 +32,24 @@ namespace wnd
 		float get_width()const noexcept;
 		float get_height()const noexcept;
 
-		void set_window_size(std::uint16_t width, std::uint16_t height) noexcept;
+		float get_cursor_x()const noexcept;
+		float get_cursor_y()const noexcept;
 
+		bool is_lmb_down()const noexcept;
+		bool is_rmb_down()const noexcept;
+
+
+		void set_window_size(std::uint16_t width, std::uint16_t height) noexcept;
 	protected:
 		std::uint16_t width;
 		std::uint16_t height;
+
+		float cursor_pos_x{};
+		float cursor_pos_y{};
+
+		bool lmb_down{};
+		bool rmb_down{};
+
 		GLFWwindow* p_wnd;
 	};
 

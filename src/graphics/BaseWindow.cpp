@@ -39,6 +39,27 @@ namespace wnd
 				pthis->set_window_size(static_cast<std::uint16_t>(w), static_cast<std::uint16_t>(h));
 			});
 
+		glfwSetCursorPosCallback(
+			p_wnd,
+			[]([[maybe_unused]] GLFWwindow* pwnd, double xpos, double ypos) {
+				auto pthis = reinterpret_cast<BaseWindow*>(glfwGetWindowUserPointer(pwnd));
+				pthis->cursor_pos_x = static_cast<float>(xpos);
+				pthis->cursor_pos_y = static_cast<float>(ypos);
+			});
+
+		glfwSetMouseButtonCallback(p_wnd,
+			[](GLFWwindow* pwnd, int button, int action, int mods) {
+				auto pthis = reinterpret_cast<BaseWindow*>(glfwGetWindowUserPointer(pwnd));
+
+				if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+					pthis->rmb_down = action == GLFW_PRESS;
+				}
+
+				if (button == GLFW_MOUSE_BUTTON_LEFT) {
+					pthis->lmb_down = action == GLFW_PRESS;
+				}
+			});
+
 		glfwSwapInterval(1);
 
 		/*GLEW init*/ {
@@ -98,6 +119,12 @@ namespace wnd
 		width = w;
 		height = h;
 	}
+
+	float BaseWindow::get_cursor_x()const noexcept { return cursor_pos_x; }
+	float BaseWindow::get_cursor_y()const noexcept { return cursor_pos_y; }
+
+	bool BaseWindow::is_lmb_down()const noexcept { return lmb_down; }
+	bool BaseWindow::is_rmb_down()const noexcept { return rmb_down; }
 
 
 	void BaseWindow::update([[maybe_unused]] float dt) {
