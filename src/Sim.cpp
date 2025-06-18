@@ -16,9 +16,9 @@ Simulation::Simulation() :
 	gradVortY{  (float*)malloc(sizeof(float) * SIZE) },
 	lenGrad  {  (float*)malloc(sizeof(float) * SIZE) },
 
-	visc{ 0.1f },
-	diff{ 0.1f },
-	vorticity{ 0.1f },
+	visc{ 0.0f },
+	diff{ 0.0f },
+	vorticity{ 0.0f },
 	dt{ 0.016f } {
 }
 

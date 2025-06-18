@@ -3,18 +3,18 @@
 class Simulation
 {
 public:
-	static constexpr int Nx = 32;
-	static constexpr int Ny = 64;
+	static constexpr int Nx = 64;
+	static constexpr int Ny = 32;
 	static constexpr int Rs = Ny + 2;
 	static constexpr int Cs = Nx + 2;
 	static constexpr int SIZE = Rs * Cs;
-	static constexpr int DIFFUSE_ITER = 30;
-	static constexpr int PROJECT_ITER = 30;
+	static constexpr int DIFFUSE_ITER = 40;
+	static constexpr int PROJECT_ITER = 40;
 
 	static constexpr float minX = 1.f;
-	static constexpr float maxX = 32.f;
+	static constexpr float maxX = float(Nx);
 	static constexpr float minY = 1.f;
-	static constexpr float maxY = 64.f;
+	static constexpr float maxY = float(Ny);
 
 	static constexpr int IX(int x, int y) { return Cs * y + x; }
 
