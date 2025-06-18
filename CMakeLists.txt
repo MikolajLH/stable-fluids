@@ -17,6 +17,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_definitions(-DGLEW_STATIC)
+add_definitions(-DASIO_STANDALONE)
 
 include_directories(${CMAKE_SOURCE_DIR}/vendor)
 

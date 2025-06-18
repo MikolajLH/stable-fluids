@@ -116,50 +116,50 @@ public:
 
 
 int main() {
-	//try {
-	//	// --- 1. Configuration ---
-	//	// !!! IMPORTANT: Replace with your ESP32's serial port name !!!
-	//	std::string port_name = "COM3"; // For Windows
-	//	// std::string port_name = "/dev/ttyUSB0"; // For Linux
-	//	// std::string port_name = "/dev/tty.SLAB_USBtoUART"; // For macOS
+	try {
+		// --- 1. Configuration ---
+		// !!! IMPORTANT: Replace with your ESP32's serial port name !!!
+		std::string port_name = "COM5"; // For Windows
+		// std::string port_name = "/dev/ttyUSB0"; // For Linux
+		// std::string port_name = "/dev/tty.SLAB_USBtoUART"; // For macOS
 
-	//	unsigned int baud_rate = 115200; // Must match your ESP32's baud rate
+		unsigned int baud_rate = 115200; // Must match your ESP32's baud rate
 
-	//	// --- 2. Setup and Open Port ---
-	//	asio::io_context io;
-	//	asio::serial_port port(io);
+		// --- 2. Setup and Open Port ---
+		asio::io_context io;
+		asio::serial_port port(io);
 
-	//	port.open(port_name);
+		port.open(port_name);
 
-	//	if (!port.is_open()) {
-	//		std::cerr << "Error: Could not open serial port " << port_name << std::endl;
-	//		return 1;
-	//	}
+		if (!port.is_open()) {
+			std::cerr << "Error: Could not open serial port " << port_name << std::endl;
+			return 1;
+		}
 
-	//	// --- 3. Configure Port Settings ---
-	//	port.set_option(asio::serial_port_base::baud_rate(baud_rate));
-	//	port.set_option(asio::serial_port_base::character_size(8));
-	//	port.set_option(asio::serial_port_base::parity(asio::serial_port_base::parity::none));
-	//	port.set_option(asio::serial_port_base::stop_bits(asio::serial_port_base::stop_bits::one));
-	//	port.set_option(asio::serial_port_base::flow_control(asio::serial_port_base::flow_control::none));
-	//	
-	//	std::println("Hello World!");
+		// --- 3. Configure Port Settings ---
+		port.set_option(asio::serial_port_base::baud_rate(baud_rate));
+		port.set_option(asio::serial_port_base::character_size(8));
+		port.set_option(asio::serial_port_base::parity(asio::serial_port_base::parity::none));
+		port.set_option(asio::serial_port_base::stop_bits(asio::serial_port_base::stop_bits::one));
+		port.set_option(asio::serial_port_base::flow_control(asio::serial_port_base::flow_control::none));
+		
+		std::println("Hello World!");
 
-	//	// --- 4. Send Data ---
-	//	std::string message_to_send = "Hello, ESP32!\n"; // \n is often important as a delimiter
+		// --- 4. Send Data ---
+		std::string message_to_send = "Hello, ESP32!\n"; // \n is often important as a delimiter
 
-	//	asio::write(port, asio::buffer(message_to_send.c_str(), message_to_send.size()));
+		asio::write(port, asio::buffer(message_to_send.c_str(), message_to_send.size()));
 
-	//	std::cout << "Message sent to " << port_name << ": " << message_to_send << std::endl;
+		std::cout << "Message sent to " << port_name << ": " << message_to_send << std::endl;
 
-	//	// --- 5. Close Port ---
-	//	port.close();
+		// --- 5. Close Port ---
+		port.close();
 
-	//}
-	//catch (const std::exception& e) {
-	//	std::cerr << "An exception occurred: " << e.what() << std::endl;
-	//	return 1;
-	//}
+	}
+	catch (const std::exception& e) {
+		std::cerr << "An exception occurred: " << e.what() << std::endl;
+		return 1;
+	}
 
 	Demo window{};
 	window.run();
