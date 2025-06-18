@@ -16,6 +16,7 @@
 #include <asio/asio/serial_port.hpp>
 
 
+asio::io_context io;
 
 class Demo : public wnd::BaseWindow {
 
@@ -23,13 +24,23 @@ public:
 	Grid2d grid;
 	Simulation sim;
 
+	
+	asio::serial_port port;
+
 	Demo()
 		:
 		BaseWindow(800, 600, "Demo!"),
 		grid(Simulation::Rs, Simulation::Cs, primitives::P2::quad),
-		sim{} {
+		sim{}, port{ io } {
 
-		grid.scale = glm::vec2(5.f, 5.f);
+		port.open("COM5");
+		port.set_option(asio::serial_port_base::baud_rate(115200));
+		port.set_option(asio::serial_port_base::character_size(8));
+		port.set_option(asio::serial_port_base::parity(asio::serial_port_base::parity::none));
+		port.set_option(asio::serial_port_base::stop_bits(asio::serial_port_base::stop_bits::one));
+		port.set_option(asio::serial_port_base::flow_control(asio::serial_port_base::flow_control::none));
+
+		grid.scale = glm::vec2(20.f, 20.f);
 		grid.change_and_update_interspace(glm::vec2(0.f, 0.f));
 
 		for (size_t r = 0; r < grid.rows; ++r)
@@ -61,10 +72,7 @@ public:
 		const auto fw = this->get_width();
 		const auto fh = this->get_height();
 
-
-
 		//GUI
-		ImGui::ShowDemoWindow();
 		ImGui::Begin("control panel");
 
 		ImGui::DragFloat("translation x", &grid.origin.x, 1.f);
@@ -72,6 +80,35 @@ public:
 
 		ImGui::InputFloat("scale x", &grid.scale.x, 0.5f, 1.f);
 		ImGui::InputFloat("scale y", &grid.scale.y, 0.5f, 1.f);
+
+		if (ImGui::Button("reset")) {
+			
+			auto msg = std::format("{} {} 0\n", -1, -1);
+			asio::write(port, asio::buffer(msg));
+		}
+		static float visc = 0.f;
+		ImGui::InputFloat("visc", &visc, 0.5f, 1.f);
+		if (ImGui::Button("change visc")) {
+			sim.visc = visc;
+			auto msg = std::format("{} {} {}\n", -2, -1, visc);
+			asio::write(port, asio::buffer(msg));
+		}
+
+		static float diff = 0.f;
+		ImGui::InputFloat("diff", &diff, 0.5f, 1.f);
+		if (ImGui::Button("change diff")) {
+			sim.diff = diff;;
+			auto msg = std::format("{} {} {}\n", -3, -1, diff);
+			asio::write(port, asio::buffer(msg));
+		}
+
+		static float vorticity = 0.f;
+		ImGui::InputFloat("vorticity", &vorticity, 0.5f, 1.f);
+		if (ImGui::Button("change vorticity")) {
+			sim.vorticity = vorticity;;
+			auto msg = std::format("{} {} {}\n", -4, -1, vorticity);
+			asio::write(port, asio::buffer(msg));
+		}
 
 		ImGui::End();
 
@@ -87,10 +124,9 @@ public:
 		
 			if (is_lmb_down()) {
 				sim.d0[Simulation::IX(icol, irow)] += 100.f;
-			}
-
-			if (is_rmb_down()) {
-				//Simulation::p_vy_prev[simulation::IX(icol, irow)] += 1.f;
+				auto msg = std::format("{} {} 0\n", icol - 1, irow - 1);
+				
+				asio::write(port, asio::buffer(msg));
 			}
 		}
 
@@ -117,52 +153,12 @@ public:
 
 int main() {
 	try {
-		// --- 1. Configuration ---
-		// !!! IMPORTANT: Replace with your ESP32's serial port name !!!
-		std::string port_name = "COM5"; // For Windows
-		// std::string port_name = "/dev/ttyUSB0"; // For Linux
-		// std::string port_name = "/dev/tty.SLAB_USBtoUART"; // For macOS
-
-		unsigned int baud_rate = 115200; // Must match your ESP32's baud rate
-
-		// --- 2. Setup and Open Port ---
-		asio::io_context io;
-		asio::serial_port port(io);
-
-		port.open(port_name);
-
-		if (!port.is_open()) {
-			std::cerr << "Error: Could not open serial port " << port_name << std::endl;
-			return 1;
-		}
-
-		// --- 3. Configure Port Settings ---
-		port.set_option(asio::serial_port_base::baud_rate(baud_rate));
-		port.set_option(asio::serial_port_base::character_size(8));
-		port.set_option(asio::serial_port_base::parity(asio::serial_port_base::parity::none));
-		port.set_option(asio::serial_port_base::stop_bits(asio::serial_port_base::stop_bits::one));
-		port.set_option(asio::serial_port_base::flow_control(asio::serial_port_base::flow_control::none));
-		
-		std::println("Hello World!");
-
-		// --- 4. Send Data ---
-		std::string message_to_send = "Hello, ESP32!\n"; // \n is often important as a delimiter
-
-		asio::write(port, asio::buffer(message_to_send.c_str(), message_to_send.size()));
-
-		std::cout << "Message sent to " << port_name << ": " << message_to_send << std::endl;
-
-		// --- 5. Close Port ---
-		port.close();
-
+		Demo window{};
+		window.run();
 	}
-	catch (const std::exception& e) {
-		std::cerr << "An exception occurred: " << e.what() << std::endl;
-		return 1;
+	catch (std::exception e) {
+		std::println("{}", e.what());
 	}
-
-	Demo window{};
-	window.run();
 
 
 	return 0;
