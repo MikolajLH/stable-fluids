@@ -9,32 +9,17 @@ Simulation::Simulation() :
 	vx0{  (float*)malloc(sizeof(float) * SIZE) },
 	vy0{  (float*)malloc(sizeof(float) * SIZE) },
 	d  {  (float*)malloc(sizeof(float) * SIZE) },
-	d0 {  (float*)malloc(sizeof(float) * SIZE) },
-	px {  (float*)malloc(sizeof(float) * SIZE) },
-	py {  (float*)malloc(sizeof(float) * SIZE) },
-	div{  (float*)malloc(sizeof(float) * SIZE) },
-	p  {  (float*)malloc(sizeof(float) * SIZE) },
+	d0 {  (float*)malloc(sizeof(float) * SIZE) }, 
 
 	vort     {  (float*)malloc(sizeof(float) * SIZE) },
-	absVort  {  (float*)malloc(sizeof(float) * SIZE) },
 	gradVortX{  (float*)malloc(sizeof(float) * SIZE) },
 	gradVortY{  (float*)malloc(sizeof(float) * SIZE) },
 	lenGrad  {  (float*)malloc(sizeof(float) * SIZE) },
-	vcfx     {  (float*)malloc(sizeof(float) * SIZE) },
-	vcfy     {  (float*)malloc(sizeof(float) * SIZE) },
 
 	visc{ 0.1f },
 	diff{ 0.1f },
 	vorticity{ 0.1f },
 	dt{ 0.016f } {
-	for (int i = 0; i < Cs; i++)
-	{
-		for (int j = 0; j < Rs; j++)
-		{
-			px[IX(i, j)] = (float)i + 0.5f;
-			py[IX(i, j)] = (float)j + 0.5f;
-		}
-	}
 }
 
 Simulation::~Simulation() {
@@ -44,18 +29,11 @@ Simulation::~Simulation() {
 	free(vy0);
 	free(d);
 	free(d0);
-	free(px);
-	free(py);
-	free(div);
-	free(p);
 
 	free(vort);
-	free(absVort);
 	free(gradVortX);
 	free(gradVortY);
 	free(lenGrad);
-	free(vcfx);
-	free(vcfy);
 }
 
 void Simulation::reset() {
@@ -109,8 +87,8 @@ void Simulation::advect(float* value, float* value0, float* u, float* v, int fla
 	{
 		for (int j = 1; j <= Ny; j++)
 		{
-			oldX = px[IX(i, j)] - u[IX(i, j)] * dt;
-			oldY = py[IX(i, j)] - v[IX(i, j)] * dt;
+			oldX = ((float)i + 0.5f) - u[IX(i, j)] * dt;
+			oldY = ((float)j + 0.5f) - v[IX(i, j)] * dt;
 
 			if (oldX < minX) oldX = minX;
 			if (oldX > maxX) oldX = maxX;
@@ -122,9 +100,9 @@ void Simulation::advect(float* value, float* value0, float* u, float* v, int fla
 			i1 = i0 + 1;
 			j1 = j0 + 1;
 
-			wL = px[IX(i1, j0)] - oldX;
+			wL = ((float)i1 + 0.5f) - oldX;
 			wR = 1.0f - wL;
-			wB = py[IX(i0, j1)] - oldY;
+			wB = ((float)j1 + 0.5f) - oldY;
 			wT = 1.0f - wB;
 
 			value[IX(i, j)] = wB * (wL * value0[IX(i0, j0)] + wR * value0[IX(i1, j0)]) + wT * (wL * value0[IX(i0, j1)] + wR * value0[IX(i1, j1)]);
@@ -166,13 +144,15 @@ void Simulation::project() {
 	{
 		for (int j = 1; j <= Ny; j++)
 		{
-			div[IX(i, j)] = 0.5f * (vx[IX(i + 1, j)] - vx[IX(i - 1, j)] + vy[IX(i, j + 1)] - vy[IX(i, j - 1)]);
-			p[IX(i, j)] = 0.0f;;
+			/*div*/vx0[IX(i, j)] = 0.5f * (vx[IX(i + 1, j)] - vx[IX(i - 1, j)] + vy[IX(i, j + 1)] - vy[IX(i, j - 1)]);
+			/*p*/vy0[IX(i, j)] = 0.0f;;
 		}
 	}
 
-	set_bnd(div, 0);
-	set_bnd(p, 0);
+	/*set_bnd(div, 0);
+	set_bnd(p, 0);*/
+	set_bnd(vx0, 0);
+	set_bnd(vy0, 0);
 
 	//projection iteration
 	for (int k = 0; k < PROJECT_ITER; k++)
@@ -181,10 +161,10 @@ void Simulation::project() {
 		{
 			for (int j = 1; j <= Ny; j++)
 			{
-				p[IX(i, j)] = (p[IX(i + 1, j)] + p[IX(i - 1, j)] + p[IX(i, j + 1)] + p[IX(i, j - 1)] - div[IX(i, j)]) / 4.0f;
+				vy0[IX(i, j)] = (vy0[IX(i + 1, j)] + vy0[IX(i - 1, j)] + vy0[IX(i, j + 1)] + vy0[IX(i, j - 1)] - vx0[IX(i, j)]) / 4.0f;
 			}
 		}
-		set_bnd(p, 0);
+		set_bnd(vy0, 0);
 	}
 
 	//velocity minus grad of Pressure
@@ -192,8 +172,8 @@ void Simulation::project() {
 	{
 		for (int j = 1; j <= Ny; j++)
 		{
-			vx[IX(i, j)] -= 0.5f * (p[IX(i + 1, j)] - p[IX(i - 1, j)]);
-			vy[IX(i, j)] -= 0.5f * (p[IX(i, j + 1)] - p[IX(i, j - 1)]);
+			vx[IX(i, j)] -= 0.5f * (vy0[IX(i + 1, j)] - vy0[IX(i - 1, j)]);
+			vy[IX(i, j)] -= 0.5f * (vy0[IX(i, j + 1)] - vy0[IX(i, j - 1)]);
 		}
 	}
 
@@ -277,41 +257,39 @@ void Simulation::vort_confinement() {
 		for (int j = 1; j <= Ny; j++)
 		{
 			vort[IX(i, j)] = 0.5f * (vy[IX(i + 1, j)] - vy[IX(i - 1, j)] - vx[IX(i, j + 1)] + vx[IX(i, j - 1)]);
-			if (vort[IX(i, j)] >= 0.0f) absVort[IX(i, j)] = vort[IX(i, j)];
-			else absVort[IX(i, j)] = -vort[IX(i, j)];
 		}
 	}
 	set_bnd(vort, 0);
-	set_bnd(absVort, 0);
-
+	
 	for (int i = 1; i <= Nx; i++)
 	{
 		for (int j = 1; j <= Ny; j++)
 		{
-			gradVortX[IX(i, j)] = 0.5f * (absVort[IX(i + 1, j)] - absVort[IX(i - 1, j)]);
-			gradVortY[IX(i, j)] = 0.5f * (absVort[IX(i, j + 1)] - absVort[IX(i, j - 1)]);
+			gradVortX[IX(i, j)] = 0.5f * (abs(vort[IX(i + 1, j)]) - abs(vort[IX(i - 1, j)]));
+			gradVortY[IX(i, j)] = 0.5f * (abs(vort[IX(i, j + 1)]) - abs(vort[IX(i, j - 1)]));
+
 			lenGrad[IX(i, j)] = sqrtf(gradVortX[IX(i, j)] * gradVortX[IX(i, j)] + gradVortY[IX(i, j)] * gradVortY[IX(i, j)]);
 			if (lenGrad[IX(i, j)] < 0.01f)
 			{
-				vcfx[IX(i, j)] = 0.0f;
-				vcfy[IX(i, j)] = 0.0f;
+				vx0[IX(i, j)] = 0.0f;
+				vy0[IX(i, j)] = 0.0f;
 			}
 			else
 			{
-				vcfx[IX(i, j)] = gradVortX[IX(i, j)] / lenGrad[IX(i, j)];
-				vcfy[IX(i, j)] = gradVortY[IX(i, j)] / lenGrad[IX(i, j)];
+				vx0[IX(i, j)] = gradVortX[IX(i, j)] / lenGrad[IX(i, j)];
+				vy0[IX(i, j)] = gradVortY[IX(i, j)] / lenGrad[IX(i, j)];
 			}
 		}
 	}
-	set_bnd(vcfx, 0);
-	set_bnd(vcfy, 0);
+	set_bnd(vx0, 0);
+	set_bnd(vy0, 0);
 
 	for (int i = 1; i <= Nx; i++)
 	{
 		for (int j = 1; j <= Ny; j++)
 		{
-			vx[IX(i, j)] += vorticity * (vcfy[IX(i, j)] * vort[IX(i, j)]);
-			vy[IX(i, j)] += vorticity * (-vcfx[IX(i, j)] * vort[IX(i, j)]);
+			vx[IX(i, j)] += vorticity * (vy0[IX(i, j)] * vort[IX(i, j)]);
+			vy[IX(i, j)] += vorticity * (-vx0[IX(i, j)] * vort[IX(i, j)]);
 		}
 	}
 

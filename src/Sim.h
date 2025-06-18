@@ -40,18 +40,12 @@ public:
 	float* vy0;
 	float* d;
 	float* d0;
-	float* px;
-	float* py;
-	float* div;
-	float* p;
+
 	//vorticity confinement
 	float* vort;
-	float* absVort;
 	float* gradVortX;
 	float* gradVortY;
 	float* lenGrad;
-	float* vcfx;
-	float* vcfy;
 
 	float visc;
 	float diff;
