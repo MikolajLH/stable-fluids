@@ -86,7 +86,8 @@ public:
 		ImGui::InputFloat("scale y", &grid.scale.y, 0.5f, 1.f);
 
 		if (ImGui::Button("reset")) {
-			
+			sim.reset();
+
 			auto msg = std::format("{} {} 0\n", -1, -1);
 			if (serial_connected)asio::write(port, asio::buffer(msg));
 		}
