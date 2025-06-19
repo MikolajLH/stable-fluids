@@ -88,7 +88,7 @@ public:
 		if (ImGui::Button("reset")) {
 			
 			auto msg = std::format("{} {} 0\n", -1, -1);
-			asio::write(port, asio::buffer(msg));
+			if (serial_connected)asio::write(port, asio::buffer(msg));
 		}
 		static float visc = 0.f;
 		ImGui::InputFloat("visc", &visc, 0.5f, 1.f);
