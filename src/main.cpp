@@ -24,21 +24,25 @@ public:
 	Grid2d grid;
 	Simulation sim;
 
-	
+	bool serial_connected;
 	asio::serial_port port;
 
-	Demo()
+	Demo(bool serial_connected)
 		:
 		BaseWindow(800, 600, "Demo!"),
 		grid(Simulation::Rs, Simulation::Cs, primitives::P2::quad),
-		sim{}, port{ io } {
+		sim{},
+		serial_connected{ serial_connected },
+		port{ io } {
 
-		port.open("COM5");
-		port.set_option(asio::serial_port_base::baud_rate(115200));
-		port.set_option(asio::serial_port_base::character_size(8));
-		port.set_option(asio::serial_port_base::parity(asio::serial_port_base::parity::none));
-		port.set_option(asio::serial_port_base::stop_bits(asio::serial_port_base::stop_bits::one));
-		port.set_option(asio::serial_port_base::flow_control(asio::serial_port_base::flow_control::none));
+		if (serial_connected) {
+			port.open("COM5");
+			port.set_option(asio::serial_port_base::baud_rate(115200));
+			port.set_option(asio::serial_port_base::character_size(8));
+			port.set_option(asio::serial_port_base::parity(asio::serial_port_base::parity::none));
+			port.set_option(asio::serial_port_base::stop_bits(asio::serial_port_base::stop_bits::one));
+			port.set_option(asio::serial_port_base::flow_control(asio::serial_port_base::flow_control::none));
+		}
 
 		grid.scale = glm::vec2(20.f, 20.f);
 		grid.change_and_update_interspace(glm::vec2(0.f, 0.f));
@@ -91,7 +95,7 @@ public:
 		if (ImGui::Button("change visc")) {
 			sim.visc = visc;
 			auto msg = std::format("{} {} {}\n", -2, -1, visc);
-			asio::write(port, asio::buffer(msg));
+			if(serial_connected)asio::write(port, asio::buffer(msg));
 		}
 
 		static float diff = 0.f;
@@ -99,7 +103,7 @@ public:
 		if (ImGui::Button("change diff")) {
 			sim.diff = diff;;
 			auto msg = std::format("{} {} {}\n", -3, -1, diff);
-			asio::write(port, asio::buffer(msg));
+			if (serial_connected)asio::write(port, asio::buffer(msg));
 		}
 
 		static float vorticity = 0.f;
@@ -107,7 +111,7 @@ public:
 		if (ImGui::Button("change vorticity")) {
 			sim.vorticity = vorticity;;
 			auto msg = std::format("{} {} {}\n", -4, -1, vorticity);
-			asio::write(port, asio::buffer(msg));
+			if (serial_connected)asio::write(port, asio::buffer(msg));
 		}
 
 		ImGui::End();
@@ -126,7 +130,7 @@ public:
 				sim.d0[Simulation::IX(icol, irow)] += 100.f;
 				auto msg = std::format("{} {} 0\n", icol - 1, irow - 1);
 				
-				asio::write(port, asio::buffer(msg));
+				if (serial_connected)asio::write(port, asio::buffer(msg));
 			}
 		}
 
@@ -153,7 +157,7 @@ public:
 
 int main() {
 	try {
-		Demo window{};
+		Demo window{false};
 		window.run();
 	}
 	catch (std::exception e) {
