@@ -274,6 +274,15 @@ const uint8_t viridis_colormap[256][3] = {
     {253, 231, 36},
 };
 
+void mapDensityToRGB_Viridis(float density, uint8_t& r, uint8_t& g, uint8_t& b) {
+    int index = (int)(density * 255.0f);
+    index = std::max(0, std::min(255, index));
+
+    r = viridis_colormap[index][0];
+    g = viridis_colormap[index][1];
+    b = viridis_colormap[index][2];
+}
+
 
 asio::io_context io;
 
@@ -326,7 +335,11 @@ public:
 			for (int j = 0; j < grid.cols; j++)
 			{	
 				const float ds = d[Simulation::IX(j, i)];
-				grid.change_color(i, j, glm::vec3(1.f - ds, 1.f, 1.f - ds));
+                uint8_t rd, gr, bl;
+                mapDensityToRGB_Viridis(ds, rd, gr, bl);
+
+                grid.change_color(i, j, glm::vec3(float(rd) / 255.f, float(gr) / 255.f, float(bl) / 255.f));
+				//grid.change_color(i, j, glm::vec3(1.f - ds, 1.f, 1.f - ds));
 			}
 		}
 	}
