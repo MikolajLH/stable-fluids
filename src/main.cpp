@@ -329,7 +329,7 @@ public:
 		sim.reset();
 	}
 
-	void draw_densities(float* d) {
+	void draw_densities(float* d, bool mode = true) {
 		for (int i = 0; i < grid.rows; i++)
 		{
 			for (int j = 0; j < grid.cols; j++)
@@ -337,9 +337,10 @@ public:
 				const float ds = d[Simulation::IX(j, i)];
                 uint8_t rd, gr, bl;
                 mapDensityToRGB_Viridis(ds, rd, gr, bl);
-
-                grid.change_color(i, j, glm::vec3(float(rd) / 255.f, float(gr) / 255.f, float(bl) / 255.f));
-				//grid.change_color(i, j, glm::vec3(1.f - ds, 1.f, 1.f - ds));
+                if(mode)
+                    grid.change_color(i, j, glm::vec3(float(rd) / 255.f, float(gr) / 255.f, float(bl) / 255.f));
+                else
+				    grid.change_color(i, j, glm::vec3(1.f - ds, 1.f, 1.f - ds));
 			}
 		}
 	}
@@ -391,6 +392,11 @@ public:
 			if (serial_connected)asio::write(port, asio::buffer(msg));
 		}
 
+        static bool d_mode = false;
+        if (ImGui::Button("change drawing mode")) {
+            d_mode = not d_mode;
+        }
+
 		ImGui::End();
 
 		float mx = get_cursor_x() - fw * 0.5f - grid.origin.x;
@@ -424,7 +430,7 @@ public:
 
 		// Draw
 		wnd::clear_screen(0.5f, 0.3f, 0.6f);
-		draw_densities(sim.d);
+		draw_densities(sim.d, d_mode);
 
 		grid.update_colors();
 		grid.draw(glm::ortho(-0.5f * fw, 0.5f * fw, -0.5f * fh, 0.5f * fh));
