@@ -312,7 +312,7 @@ public:
 			port.set_option(asio::serial_port_base::flow_control(asio::serial_port_base::flow_control::none));
 		}
 
-		grid.scale = glm::vec2(20.f, 20.f);
+		grid.scale = glm::vec2(5.f, 5.f);
 		grid.change_and_update_interspace(glm::vec2(0.f, 0.f));
 
 		for (size_t r = 0; r < grid.rows; ++r)
@@ -354,8 +354,12 @@ public:
 		ImGui::DragFloat("translation x", &grid.origin.x, 1.f);
 		ImGui::DragFloat("translation y", &grid.origin.y, 1.f);
 
-		ImGui::InputFloat("scale x", &grid.scale.x, 0.5f, 1.f);
-		ImGui::InputFloat("scale y", &grid.scale.y, 0.5f, 1.f);
+        if (ImGui::InputFloat("scale x", &grid.scale.x, 0.5f, 1.f)) {
+            grid.change_and_update_interspace(glm::vec2(0.f, 0.f));
+        }
+        if (ImGui::InputFloat("scale y", &grid.scale.y, 0.5f, 1.f)) {
+            grid.change_and_update_interspace(glm::vec2(0.f, 0.f));
+        }
 
 		if (ImGui::Button("reset")) {
 			sim.reset();
