@@ -3,8 +3,8 @@
 class Simulation
 {
 public:
-	static constexpr int Nx = 64;
-	static constexpr int Ny = 32;
+	static constexpr int Nx = 100;
+	static constexpr int Ny = 100;
 	static constexpr int Rs = Ny + 2;
 	static constexpr int Cs = Nx + 2;
 	static constexpr int SIZE = Rs * Cs;
