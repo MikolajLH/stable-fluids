@@ -9,7 +9,7 @@ public:
 	static constexpr int Cs = Nx + 2;
 	static constexpr int SIZE = Rs * Cs;
 	static constexpr int DIFFUSE_ITER = 40;
-	static constexpr int PROJECT_ITER = 40;
+	static constexpr int PROJECT_ITER = 100;
 
 	static constexpr float minX = 1.f;
 	static constexpr float maxX = float(Nx);
